@@ -31,8 +31,11 @@ def detail_article(id):
 
 @app.route('/all_article', methods=['get', 'post'])
 def all_article():
-    articles=Article.query.order_by(Article.oId.desc())
-    return render_template('article_all.html', articles=articles)
+        articles=Article.query.order_by(Article.oId.desc())
+        try:
+            return render_template('article_all.html', articles=articles)
+        except:
+            db.create_all()
 
 @app.route('/delete_article/<int:id>', methods=['get', 'post'])
 def delete_article(id):
@@ -140,6 +143,7 @@ def upload():
     res.headers['Access-Control-Allow-Origin'] = '*'
     res.headers['Access-Control-Allow-Headers'] = 'X-Requested-With,X_Requested_With'
     return res
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=4001)
