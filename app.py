@@ -9,6 +9,7 @@ from model.Article import ArticleForm, Article
 from model.db import db
 from tools.ForString import isNotNull, isNull
 from uploader import Uploader
+from scrapy.selector import Selector
 
 app = Flask(__name__)
 app.secret_key = 'asjajskgjkagfjkadsgfjkagf'
@@ -33,8 +34,12 @@ def detail_article(id):
 def all_article():
         articles=Article.query.order_by(Article.oId.desc())
         try:
+            for article in articles:
+                sel = Selector(text=article.content)
+                article.content= sel.xpath('string(/*)').extract()[0]
             return render_template('article_all.html', articles=articles)
-        except:
+        except Exception as e:
+            raise e
             db.create_all()
 
 @app.route('/delete_article/<int:id>', methods=['get', 'post'])

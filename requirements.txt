@@ -3,4 +3,5 @@ flask-sqlalchemy
 flask_wtf
 requests
 flask_migrate
+scrapy
 

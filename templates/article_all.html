@@ -3,20 +3,31 @@
 {% block body%}
 <ul class="list-unstyled">
     {% for article in articles%}
-    <li>
-        <div class="panel {{class_list|random}}">
-  <div class="panel-heading">
-     <a href="{{url_for('detail_article',id=article.oId)}}">
-         {{article.title}}---{{article.create_time}}
-     </a>
-         &nbsp;&nbsp;&nbsp;&nbsp; <a href="{{url_for('delete_article',id=article.oId)}}">删除</a>
-  </div>
-  <div class="panel-body">{{article.label}}</div>
-</div>
+    <li style="background-color: #f7f7f7;margin-bottom: 50px;padding-left: 50px;">
+        <div style="display: -webkit-flex;display: flex;flex-direction: row" >
+            <img src="{{article.img}}" style="width: 300px;height: 200px"/>
+            <div style="display: -webkit-flex;display: flex;flex-direction: column;margin-left: 10px" >
+                <h1>{{article.title}}</h1>
+                <div style="display: -webkit-flex;display: flex;flex-direction: row" >标签：&nbsp;&nbsp;<p style="color: #00b7ee">{{article.label}}</p></div>
+                <div>{{article.content}}</div>
+            </div>
+
+        </div>
+    </li>
+
+
+<!--        <div class="panel {{class_list|random}}">-->
+<!--  <div class="panel-heading">-->
+<!--     <a href="{{url_for('detail_article',id=article.oId)}}">-->
+<!--         -&#45;&#45;{{article.create_time}}-->
+<!--     </a>-->
+<!--         &nbsp;&nbsp;&nbsp;&nbsp; <a href="{{url_for('delete_article',id=article.oId)}}">删除</a>-->
+<!--  </div>-->
+<!--  <div class="panel-body">{{article.label}}</div>-->
+<!--</div>-->
 
 {% endfor %}
 
-    </li>
 
 </ul>
 {% endblock %}
