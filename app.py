@@ -10,8 +10,10 @@ from model.db import db
 from tools.ForString import isNotNull, isNull
 from uploader import Uploader
 from scrapy.selector import Selector
+from flask_cors import *  # 导入模块
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)  # 设置跨域
 app.secret_key = 'asjajskgjkagfjkadsgfjkagf'
 # json支持中文显示
 app.config['JSON_AS_ASCII'] = False
@@ -20,6 +22,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
+
+@app.route('/upload_article.html', methods=['get'])
+def html():
+    form = ArticleForm()
+    return render_template('html/upload_article.html', form=form)
+
+
+
 
 @app.route('/')
 def index():
@@ -127,6 +137,7 @@ def upload():
     if result.get('filePath',None):
         web_result = go_upload(result.get('filePath'))
         result['url'] = web_result.get('data').get('img_url')
+    result['filePath']=result.get('url','')
 
 
 
@@ -144,6 +155,7 @@ def upload():
 
     print(result)
     print("mimetype",mimetype)
+    result="<html><head><script>document.domain='http://0.0.0.0:4001/'</script></head><body>"+result+"</body></html>"
     res = make_response(result)
     res.mimetype = mimetype
     res.headers['Access-Control-Allow-Origin'] = '*'
