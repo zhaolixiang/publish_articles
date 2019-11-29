@@ -39,8 +39,9 @@ def all_article():
                 article.content= sel.xpath('string(/*)').extract()[0]
             return render_template('article_all.html', articles=articles)
         except Exception as e:
-            raise e
+            # raise e
             db.create_all()
+            return render_template('article_all.html', articles=None)
 
 @app.route('/delete_article/<int:id>', methods=['get', 'post'])
 def delete_article(id):
