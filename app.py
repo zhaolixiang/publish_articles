@@ -8,6 +8,7 @@ from UploadToWeb import go_upload
 from model.Article import ArticleForm, Article
 from model.db import db
 from tools.ForString import isNotNull, isNull
+from tools.ResultJson import ResultJson, convert_to_dict
 from uploader import Uploader
 from scrapy.selector import Selector
 from flask_cors import *  # 导入模块
@@ -17,11 +18,12 @@ CORS(app, supports_credentials=True)  # 设置跨域
 app.secret_key = 'asjajskgjkagfjkadsgfjkagf'
 # json支持中文显示
 app.config['JSON_AS_ASCII'] = False
-file_path = os.path.abspath(os.getcwd())+"/article.db"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
+file_path = os.path.abspath(os.getcwd()) + "/article.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + file_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
+
 
 @app.route('/upload_article.html', methods=['get'])
 def html():
@@ -29,29 +31,38 @@ def html():
     return render_template('html/upload_article.html', form=form)
 
 
-
-
 @app.route('/')
 def index():
     return redirect(url_for('add_article'))
+
 
 @app.route('/detail_article<int:id>', methods=['get', 'post'])
 def detail_article(id):
     article = Article.query.get(id)
     return render_template('article_detail.html', article=article)
 
+
 @app.route('/all_article', methods=['get', 'post'])
 def all_article():
-        articles=Article.query.order_by(Article.oId.desc())
-        try:
-            for article in articles:
-                sel = Selector(text=article.content)
-                article.content= sel.xpath('string(/*)').extract()[0]
-            return render_template('article_all.html', articles=articles)
-        except Exception as e:
-            # raise e
-            db.create_all()
-            return render_template('article_all.html', articles=None)
+    articles = Article.query.order_by(Article.oId.desc())
+    try:
+        for article in articles:
+            sel = Selector(text=article.content)
+            article.content = sel.xpath('string(/*)').extract()[0]
+        return render_template('article_all.html', articles=articles)
+    except Exception as e:
+        # raise e
+        db.create_all()
+        return render_template('article_all.html', articles=None)
+
+
+@app.route('/api/all_article', methods=['get', 'post'])
+def api_all_article():
+    articles = Article.query.order_by(Article.oId.desc()).all()
+    print(articles)
+    articles=[convert_to_dict(article) for article in articles]
+    return jsonify(data=articles)
+
 
 @app.route('/delete_article/<int:id>', methods=['get', 'post'])
 def delete_article(id):
@@ -60,17 +71,19 @@ def delete_article(id):
     article.save()
     return redirect(url_for('all_article'))
 
+
 @app.route('/add_article', methods=['get'])
 def add_article():
     form = ArticleForm()
     return render_template('article_add.html', form=form)
 
+
 @app.route('/upload_article', methods=['POST'])
 def upload_article():
-    img=request.values.get('img','')
-    print("获取到的图片",img)
+    img = request.values.get('img', '')
+    print("获取到的图片", img)
     if isNull(img):
-        return jsonify(success=False,msg='请选择封面')
+        return jsonify(success=False, msg='请选择封面')
     title = request.form.get('title', '')
     if isNull(title):
         return jsonify(success=False, msg='请填写标题')
@@ -81,15 +94,13 @@ def upload_article():
 
     article = Article()
     print("提交数据了", article)
-    article.title =title
+    article.title = title
     article.content = content
     article.img = img
     article.label = label
     article.create_time = datetime.datetime.now()
     article.save()
     return jsonify(success=True)
-
-
 
 
 @app.route('/upload/', methods=['GET', 'POST', 'OPTIONS'])
@@ -134,16 +145,13 @@ def upload():
     else:
         result['state'] = '不支持此上传'
 
-    if result.get('filePath',None):
+    if result.get('filePath', None):
         web_result = go_upload(result.get('filePath'))
         result['url'] = web_result.get('data').get('img_url')
-    result['filePath']=result.get('url','')
-
-
-
+    result['filePath'] = result.get('url', '')
 
     result = json.dumps(result)
-    print("是",result)
+    print("是", result)
 
     if 'callback' in request.args:
         callback = request.args.get('callback')
@@ -154,8 +162,8 @@ def upload():
             result = json.dumps({'state': 'callback参数不合法'})
 
     print(result)
-    print("mimetype",mimetype)
-    result="<html><head><script>document.domain='http://0.0.0.0:4001/'</script></head><body>"+result+"</body></html>"
+    print("mimetype", mimetype)
+    result = "<html><head><script>document.domain='http://0.0.0.0:4001/'</script></head><body>" + result + "</body></html>"
     res = make_response(result)
     res.mimetype = mimetype
     res.headers['Access-Control-Allow-Origin'] = '*'
@@ -164,4 +172,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=4001)
+    app.run(host='0.0.0.0', port=4001)

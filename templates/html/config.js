@@ -5,3 +5,5 @@ window.UEDITOR_HOME_URL='/publish_articles/html/static/';
 var UploadImg=webUrl+"upload/";
 //文章上传链接
 var UploadArticle=webUrl+"upload_article";
+//文章列表接口
+var AllArticle=webUrl+"api/all_article";
