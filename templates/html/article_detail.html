@@ -48,8 +48,14 @@
 
 </div>
 
+<div class="col-md-2 col-md-offset-3">
+    <img id="img"/>
+<h1 id="title">标题：</h1>
+<h3 id="label">标签：</h3>
+<h5 id="create_time">创建时间：</h5>
+<div id="content">文章正文：</div>
+</div>
 
-<div id="mark"></div>
 <!--<ul class="list-unstyled">-->
 <!--    <li style="background-color: #f7f7f7;margin-bottom: 50px;padding-left: 50px;">-->
 <!--        <div style="display: -webkit-flex;display: flex;flex-direction: row" >-->
@@ -65,34 +71,28 @@
 <!--</ul>-->
 
 <script type="text/javascript">
+    function GetQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURI(r[2]);
+    return null;
+}
     $(document).ready(function(){
-        console.log("yyy",$('#mark').text());
+        let id=GetQueryString('id');
+        // console.log("yyy",$('#mark').text());
         // $('#mark').append("222");
         $.ajax({
-                 url: AllArticle,
+                 url: DetailArticle+id,
                 type: "get",
                 success: function(result) {
                      //成功
                     console.log("成功",result)
-                    var DOM='<ul class="list-unstyled">';
                     let data=result.data;
-                    for(let i=0;i<data.length;i++){
-                        // DOM+="22233";
-                        DOM+='<li style="background-color: #f7f7f7;margin-bottom: 50px;padding-left: 50px;">\n' +
-                            '        <div style="display: -webkit-flex;display: flex;flex-direction: row" >\n' +
-                            '            <img src="'+data[i].img+'" style="width: 300px;height: 200px"/>\n' +
-                            '            <div style="display: -webkit-flex;display: flex;flex-direction: column;margin-left: 10px" >\n' +
-                            '                <a href="article_detail.html?id='+data[i].oId+'"><h1>'+data[i].title+'</h1></a>\n' +
-                            '                <div style="display: -webkit-flex;display: flex;flex-direction: row" >标签：&nbsp;&nbsp;<p style="color: #00b7ee">'+data[i].label+'</p></div>\n' +
-                            '                <div>'+data[i].content+'</div>\n' +
-                            '            </div>\n' +
-                            '\n' +
-                            '        </div>\n' +
-                            ' </li>';
-                    }
-                    DOM+="</ul>";
-                    console.log("hell",DOM);
-                    $('#mark').append(DOM);
+                    $('#img').attr("src",data.img);
+                    $('#title').append(data.title);
+                    $('#label').append(data.label);
+                    $('#create_time').append(data.create_time);
+                    $('#content').append(data.content);
                  },
                  error: function(e) {
                      //失败

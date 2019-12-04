@@ -2,15 +2,13 @@ import datetime
 import os
 import re
 from flask_migrate import Migrate
-from flask import Flask, redirect, url_for, render_template, make_response, json, request, jsonify
+from flask import Flask, make_response, json, request, jsonify
 
-from UploadToWeb import go_upload
-from model.Article import ArticleForm, Article
+from tools.UploadToWeb import go_upload
+from model.Article import Article
 from model.db import db
-from tools.ForString import isNotNull, isNull
-from tools.ResultJson import ResultJson, convert_to_dict
-from uploader import Uploader
-from scrapy.selector import Selector
+from tools.ForString import isNull
+from tools.uploader import Uploader
 from flask_cors import *  # 导入模块
 
 app = Flask(__name__)
@@ -25,57 +23,30 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
-@app.route('/upload_article.html', methods=['get'])
-def html():
-    form = ArticleForm()
-    return render_template('html/upload_article.html', form=form)
+def convert_to_dict(obj):
+    '''把Object对象转换成Dict对象'''
+    dict = {}
+    dict.update(obj.__dict__)
+    dict = {key: str(dict[key]) for key in dict.keys()}
+    return dict
 
 
 @app.route('/')
 def index():
-    return redirect(url_for('add_article'))
-
-
-@app.route('/detail_article<int:id>', methods=['get', 'post'])
-def detail_article(id):
-    article = Article.query.get(id)
-    return render_template('article_detail.html', article=article)
-
-
-@app.route('/all_article', methods=['get', 'post'])
-def all_article():
-    articles = Article.query.order_by(Article.oId.desc())
-    try:
-        for article in articles:
-            sel = Selector(text=article.content)
-            article.content = sel.xpath('string(/*)').extract()[0]
-        return render_template('article_all.html', articles=articles)
-    except Exception as e:
-        # raise e
-        db.create_all()
-        return render_template('article_all.html', articles=None)
+    return "只是接口，请访问静态页面：templates->html->upload_article.html"
 
 
 @app.route('/api/all_article', methods=['get', 'post'])
 def api_all_article():
     articles = Article.query.order_by(Article.oId.desc()).all()
-    print(articles)
-    articles=[convert_to_dict(article) for article in articles]
+    articles = [convert_to_dict(article) for article in articles]
     return jsonify(data=articles)
 
 
-@app.route('/delete_article/<int:id>', methods=['get', 'post'])
-def delete_article(id):
+@app.route('/api/detail_article/<int:id>', methods=['get', 'post'])
+def api_detail_article(id):
     article = Article.query.get(id)
-    article.delete()
-    article.save()
-    return redirect(url_for('all_article'))
-
-
-@app.route('/add_article', methods=['get'])
-def add_article():
-    form = ArticleForm()
-    return render_template('article_add.html', form=form)
+    return jsonify(data=convert_to_dict(article))
 
 
 @app.route('/upload_article', methods=['POST'])

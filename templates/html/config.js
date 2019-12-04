@@ -7,3 +7,5 @@ var UploadImg=webUrl+"upload/";
 var UploadArticle=webUrl+"upload_article";
 //文章列表接口
 var AllArticle=webUrl+"api/all_article";
+//
+var DetailArticle=webUrl+"api/detail_article/";
