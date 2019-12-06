@@ -1,6 +1,6 @@
 //网站地址
 // var webUrl="http://0.0.0.0:4001/";
-var webUrl = "http://news.53iq.com/";
+var webUrl = "http://news.handsomemark.com/";
 
 window.UEDITOR_HOME_URL = '/publish_articles/html/static/';
 //富文本图片上传链接

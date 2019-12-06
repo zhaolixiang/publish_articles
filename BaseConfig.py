@@ -3,7 +3,7 @@ import os
 
 class BaseConfig(object):
     #
-    webUrl = "http://news.53iq.com/"
+    webUrl = "http://news.handsomemark.com/"
     # 程序的密钥
     SECRET_KEY = 'asjajskgjkagfjkadsgfjkagf'
     # json中文正常显示
