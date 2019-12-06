@@ -29,6 +29,7 @@
                 me.fireEvent("serverConfigLoaded");
                 me._serverConfigLoaded = true;
               } catch (e) {
+                  console.log("这里报错",e);
                 showErrorMsg(me.getLang("loadconfigFormatError"));
               }
             },
