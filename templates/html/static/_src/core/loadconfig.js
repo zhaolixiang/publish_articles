@@ -24,6 +24,10 @@
             dataType: isJsonp ? "jsonp" : "",
             onsuccess: function(r) {
               try {
+                  console.log("第1步",isJsonp);
+                  console.log("第2步",r);
+                  console.log("第3步",r.responseText);
+                  console.log("第4步",eval("(" + r.responseText + ")"));
                 var config = isJsonp ? r : eval("(" + r.responseText + ")");
                 utils.extend(me.options, config);
                 me.fireEvent("serverConfigLoaded");
