@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web1:
+    restart: always
+    build: .
+    volumes:
+      - .:/publish_articles
+    environment:
+      - YAOFUN_ENV=development
+#    command: bash -c "pip install -r requirements.txt"
+#    command: bash -c "pip install -r /oven/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple"
+    command: bash -c "python /publish_articles/app.py"
+    ports:
+      - "4021:4021"
