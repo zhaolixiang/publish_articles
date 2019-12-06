@@ -131,7 +131,7 @@ def upload():
 
     print(result)
     print("mimetype", mimetype)
-    result = "<html><head><script>document.domain='"+BaseConfig.webUrl+"'</script></head><body>" + result + "</body></html>"
+    # result = "<html><head><script>document.domain='"+BaseConfig.webUrl+"'</script></head><body>" + result + "</body></html>"
     res = make_response(result)
     res.mimetype = mimetype
     res.headers['Access-Control-Allow-Origin'] = '*'
